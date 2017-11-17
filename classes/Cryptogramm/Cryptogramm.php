@@ -23,6 +23,9 @@ class Cryptogramm
         //$this->get_perestanovka(10);
     }
 
+    /**
+     *
+     */
     public static function quickStart()
     {
         $crypto = new self();
@@ -31,6 +34,9 @@ class Cryptogramm
         die;
     }
 
+    /**
+     *
+     */
     public function loadRules()
     {
         $rulesConfigs = include(__DIR__.'/../../config/cryptorules.php');
@@ -43,6 +49,7 @@ class Cryptogramm
      * @var array
      */
     private $numbers = [];
+
     /**
      * @var array
      */
@@ -96,7 +103,6 @@ class Cryptogramm
      */
     public function get_perestanovka($n)
     {
-        //$result = [];
         $filePath = __DIR__ . '/../../public_html/perm.txt';
         if (!file_exists($filePath)) {
             throw new \Exception('Could not find file "' . $filePath . '".');
@@ -105,7 +111,6 @@ class Cryptogramm
         if (!$fp) {
             throw new \Exception('Could not open file "perm.txt" for writing.');
         }
-        //if ($n <= 0) return $result;
         $a = array_fill(0, $n, -1);
         $i = 0;
         while ($i >= 0) {

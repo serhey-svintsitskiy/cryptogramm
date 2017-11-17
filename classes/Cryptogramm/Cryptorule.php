@@ -14,7 +14,7 @@ class Cryptorule
     /**
      * @var array
      */
-    private static $symbolsMap = ['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5, 'g' => 6, 'h' => 7, 'i' => 8, 'j' => 9];
+    public static $symbolsMap = ['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5, 'g' => 6, 'h' => 7, 'i' => 8, 'j' => 9];
     private $firstNumber = [];
     private $secondNumber = [];
     private $resultNumber = [];
@@ -69,11 +69,13 @@ class Cryptorule
         $firstNumber = $this->buildNumber($this->firstNumber, $numbers);
         $secondNumber = $this->buildNumber($this->secondNumber, $numbers);
         $resultNumber = $this->buildNumber($this->resultNumber, $numbers);
+        if($firstNumber === false || $secondNumber === false || $resultNumber === false){
+            return false;
+        }
         $calculatedResult = $this->calcOperation($firstNumber, $secondNumber);
-        if ($firstNumber === false || $secondNumber === false || $resultNumber === false || $calculatedResult === false || $calculatedResult !== $resultNumber) {
+        if ($calculatedResult === false || $calculatedResult !== $resultNumber) {
             return false;
         } else {
-            //print_r($firstNumber . $this->matches[2] . $secondNumber . '=' . $calculatedResult . ' (' . $resultNumber . ') (' . implode('', $numbers) . ')<br>');
             return true;
         }
 

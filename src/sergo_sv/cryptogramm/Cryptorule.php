@@ -1,14 +1,11 @@
 <?php
+
+namespace sergo_sv\cryptogramm;
+
 /**
- * Created by PhpStorm.
- * User: sergey
- * Date: 11/16/17
- * Time: 4:09 PM
+ * Class Cryptorule
+ * @package sergo_sv\cryptogramm
  */
-
-namespace classes\Cryptogramm;
-
-
 class Cryptorule
 {
     /**
@@ -69,7 +66,7 @@ class Cryptorule
         $firstNumber = $this->buildNumber($this->firstNumber, $numbers);
         $secondNumber = $this->buildNumber($this->secondNumber, $numbers);
         $resultNumber = $this->buildNumber($this->resultNumber, $numbers);
-        if($firstNumber === false || $secondNumber === false || $resultNumber === false){
+        if ($firstNumber === false || $secondNumber === false || $resultNumber === false) {
             return false;
         }
         $calculatedResult = $this->calcOperation($firstNumber, $secondNumber);

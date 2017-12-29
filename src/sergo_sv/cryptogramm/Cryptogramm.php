@@ -1,45 +1,52 @@
 <?php
+
+namespace sergo_sv\cryptogramm;
+
 /**
- * Created by PhpStorm.
- * User: sergey
- * Date: 11/16/17
- * Time: 2:31 PM
+ * Class Cryptogramm
+ * @package sergo_sv\cryptogramm
  */
-
-namespace classes\Cryptogramm;
-
 class Cryptogramm
 {
 
+    /**
+     * @var array
+     */
     private $rules = [];
 
+    /**
+     * Cryptogramm constructor.
+     */
     public function __construct()
     {
         $this->init();
     }
 
+    /**
+     *
+     */
     private function init()
     {
         //$this->get_perestanovka(10);
     }
 
     /**
-     *
+     * @param array $rulesConfigs
+     * @param string $filePath
      */
-    public static function quickStart()
+    public static function quickStart($rulesConfigs, $filePath)
     {
         $crypto = new self();
-        $crypto->loadRules();
-        $crypto->calculate();
+        $crypto->loadRules($rulesConfigs);
+        $crypto->calculate($filePath);
         die;
     }
 
     /**
-     *
+     * @param array $rulesConfigs
      */
-    public function loadRules()
+    public function loadRules($rulesConfigs)
     {
-        $rulesConfigs = include(__DIR__.'/../../config/cryptorules.php');
         foreach ($rulesConfigs as $rawRule){
             $this->rules[] = Cryptorule::parseRule($rawRule);
         }
@@ -56,11 +63,11 @@ class Cryptogramm
     private $result = [];
 
     /**
+     * @param string $filePath
      * @throws \Exception
      */
-    public function calculate()
+    public function calculate($filePath)
     {
-        $filePath = __DIR__ . '/../../public_html/perm.txt';
         if (!file_exists($filePath)) {
             throw new \Exception('Could not find file "' . $filePath . '".');
         }
@@ -101,7 +108,7 @@ class Cryptogramm
      * @return bool
      * @throws \Exception
      */
-    public function get_perestanovka($n)
+    public static function get_perestanovka($n)
     {
         $filePath = __DIR__ . '/../../public_html/perm.txt';
         if (!file_exists($filePath)) {

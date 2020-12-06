@@ -3,10 +3,10 @@
 namespace Sergosv\CryptogrammBrutforce;
 
 /**
- * Class Cryptogramm
+ * Class Brutforcer
  * @package sergo_sv\cryptogramm
  */
-class Cryptogramm
+class Brutforcer
 {
 
     /**
@@ -15,7 +15,7 @@ class Cryptogramm
     private $rules = [];
 
     /**
-     * Cryptogramm constructor.
+     * Brutforcer constructor.
      */
     public function __construct()
     {

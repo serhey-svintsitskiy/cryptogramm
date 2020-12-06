@@ -5,31 +5,24 @@ declare(strict_types=1);
 namespace Sergosv\CryptogrammBrutforce;
 
 use JetBrains\PhpStorm\Pure;
-use RuntimeException;
+use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetGenerator;
+use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetInterface;
 
 class Brutforcer
 {
     private array $rules = [];
 
-    private array $numbers = [];
-
-    private array $result = [];
-
     public function __construct(
         private RuleParser $ruleParser,
-    )
-    {
-        /** @todo load list */
-        //$this->fillList(10);
+        private NumberSetInterface $numberSetIterator,
+    ) {
     }
 
-    public static function quickStart(array $rulesConfigs, string $filePath): array
+    public static function quickStart(array $rulesConfigs): array
     {
-        $crypto = new self(new RuleParser());
+        $crypto = new self(new RuleParser(), new NumberSetGenerator());
         $crypto->loadRules($rulesConfigs);
-        $crypto->calculate($filePath);
-        
-        return $crypto->result;
+        return $crypto->calculate();
     }
 
     public function loadRules(array $rulesConfigs): void
@@ -40,68 +33,29 @@ class Brutforcer
         }
     }
 
-    public function calculate(string $filePath): array
+    public function calculate(): array
     {
-        if (!file_exists($filePath)) {
-            throw new RuntimeException('Could not find file "' . $filePath . '".');
-        }
-        $fp = fopen($filePath, 'rb');
-        if (!$fp) {
-            throw new RuntimeException('Could not open file "perm.txt" for reading.');
-        }
-        while (($line = fgets($fp)) !== false) {
-            $this->numbers = str_split(trim($line));
-            if ($this->checkRules()) {
-                $this->result[] = $this->numbers;
+        $result = [];
+        
+        foreach ($this->numberSetIterator->getIterator() as $numbers) {
+            if ($this->checkRules($numbers)) {
+                $result[] = $numbers;
             }
         }
 
-        return $this->result;
+        return $result;
     }
 
     #[Pure]
-    private function checkRules(): bool
+    private function checkRules(array $numbers): bool
     {
         /** @var Cryptorule $cryptorule */
         foreach ($this->rules as $cryptorule) {
-            if (!$cryptorule->checkRule($this->numbers)) {
+            if (!$cryptorule->checkRule($numbers)) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    public static function generateList(int $n): void
-    {
-        $filePath = __DIR__ . '/../../public_html/perm.txt';
-        if (!file_exists($filePath)) {
-            throw new RuntimeException('Could not find file "' . $filePath . '".');
-        }
-        $fp = fopen($filePath, 'wb');
-        if (!$fp) {
-            throw new RuntimeException('Could not open file "perm.txt" for writing.');
-        }
-        $a = array_fill(0, $n, -1);
-        $i = 0;
-        while ($i >= 0) {
-            while ($i < $n) {
-                $j = $a[$i];
-                while (in_array(++$j, $a, true) && $j < $n) {
-                }
-                if ($j === $n) {
-                    break;
-                }
-                $a[$i++] = $j;
-            }
-            if ($i === $n) {
-                if (!fwrite($fp, implode('', $a) . "\n")) {
-                    throw new RuntimeException('Could not write text "' . implode('', $a) . '" to file "perm.txt".');
-                }
-                $i--;
-            }
-            $a[$i--] = -1;
-        }
-        fclose($fp);
     }
 }

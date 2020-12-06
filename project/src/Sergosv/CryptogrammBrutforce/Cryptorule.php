@@ -8,7 +8,7 @@ use JetBrains\PhpStorm\Pure;
 
 class Cryptorule
 {
-    public static array $symbolsMap = [
+    private array $symbolsMap = [
         'a' => 0,
         'b' => 1,
         'c' => 2,
@@ -49,7 +49,7 @@ class Cryptorule
         $number = 0;
         $numberSize = count($numberMap);
         foreach ($numberMap as $index => $symbol) {
-            $digit = $numbers[self::$symbolsMap[$symbol]];
+            $digit = $numbers[$this->symbolsMap[$symbol]];
             if (($digit === 0) && ($index === $numberSize - 1)) {
                 return null;
             }

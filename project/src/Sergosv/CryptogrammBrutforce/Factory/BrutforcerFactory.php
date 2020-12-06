@@ -4,21 +4,25 @@ declare(strict_types=1);
 
 namespace Sergosv\CryptogrammBrutforce\Factory;
 
-
-use JetBrains\PhpStorm\Pure;
 use Sergosv\CryptogrammBrutforce\Brutforcer;
-use Sergosv\CryptogrammBrutforce\RuleParser;
+use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetGenerator;
+use Sergosv\CryptogrammBrutforce\Rule\RuleParser;
+use Sergosv\CryptogrammBrutforce\Rule\RuleSet;
 
 class BrutforcerFactory
 {
     public function __construct(
         private RuleParser $ruleParser,
+        private RuleSet $ruleSet,
     ) {
     }
 
-    #[Pure]
-    public function create(): Brutforcer
+    public function create($rulesConfigs): Brutforcer
     {
-        return new Brutforcer($this->ruleParser);
+        foreach ($rulesConfigs as $rawRule) {
+            $this->ruleSet->add($this->ruleParser->parse($rawRule));
+        }
+
+        return new Brutforcer(new NumberSetGenerator(), $this->ruleSet);
     }
 }

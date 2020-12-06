@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sergosv\CryptogrammBrutforce;
+namespace Sergosv\CryptogrammBrutforce\Rule;
 
 use JetBrains\PhpStorm\Pure;
 
@@ -87,5 +87,17 @@ class Cryptorule
         }
 
         return $result;
+    }
+    
+    #[Pure]
+    public function getIdent(): string
+    {
+        return sprintf(
+            "%s%s%s=%s",
+            implode('', $this->firstNumber),
+            $this->operation,
+            implode('', $this->secondNumber),
+            implode('', $this->resultNumber)
+        );
     }
 }

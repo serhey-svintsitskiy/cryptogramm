@@ -1,7 +1,12 @@
 <?php
 
-use Sergosv\CryptogrammBrutforce\Brutforcer;
+use Sergosv\CryptogrammBrutforce\Factory\BrutforcerFactory;
+use Sergosv\CryptogrammBrutforce\Rule\RuleParser;
+use Sergosv\CryptogrammBrutforce\Rule\RuleSet;
 
 require_once '../vendor/autoload.php';
 
-Brutforcer::quickStart(include(__DIR__ . '/../config/cryptorules.php'), __DIR__ . '/perm.txt');
+$rulesConfigs = include(__DIR__ . '/../config/cryptorules.php');
+$brutforcerFactory = new BrutforcerFactory(new RuleParser(), new RuleSet());
+$brutforcer = $brutforcerFactory->create($rulesConfigs);
+return $brutforcer->calculate();

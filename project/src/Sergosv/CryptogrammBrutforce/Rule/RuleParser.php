@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sergosv\CryptogrammBrutforce;
+namespace Sergosv\CryptogrammBrutforce\Rule;
 
 class RuleParser
 {

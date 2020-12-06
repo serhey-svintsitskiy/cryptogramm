@@ -7,30 +7,27 @@ namespace Sergosv\CryptogrammBrutforce;
 use JetBrains\PhpStorm\Pure;
 use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetGenerator;
 use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetInterface;
+use Sergosv\CryptogrammBrutforce\Rule\Cryptorule;
+use Sergosv\CryptogrammBrutforce\Rule\RuleParser;
+use Sergosv\CryptogrammBrutforce\Rule\RuleSet;
 
 class Brutforcer
 {
-    private array $rules = [];
-
     public function __construct(
-        private RuleParser $ruleParser,
         private NumberSetInterface $numberSetIterator,
+        private RuleSet $ruleSet,
     ) {
     }
 
     public static function quickStart(array $rulesConfigs): array
     {
-        $crypto = new self(new RuleParser(), new NumberSetGenerator());
-        $crypto->loadRules($rulesConfigs);
-        return $crypto->calculate();
-    }
-
-    public function loadRules(array $rulesConfigs): void
-    {
-        /** @todo check for uniq rules */
+        $ruleParser = new RuleParser();
+        $ruleSet = new RuleSet();
         foreach ($rulesConfigs as $rawRule) {
-            $this->rules[] = $this->ruleParser->parse($rawRule);
+            $ruleSet->add($ruleParser->parse($rawRule));
         }
+        $crypto = new self(new NumberSetGenerator(), $ruleSet);
+        return $crypto->calculate();
     }
 
     public function calculate(): array
@@ -50,7 +47,7 @@ class Brutforcer
     private function checkRules(array $numbers): bool
     {
         /** @var Cryptorule $cryptorule */
-        foreach ($this->rules as $cryptorule) {
+        foreach ($this->ruleSet->getAll() as $cryptorule) {
             if (!$cryptorule->checkRule($numbers)) {
                 return false;
             }

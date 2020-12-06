@@ -33,12 +33,12 @@ class Cryptorule
 
     public static function parseRule(string $rawRule): self
     {
-        preg_match_all(self::$regex, str_replace(' ', '', trim($rawRule)), $matches, PREG_SET_ORDER);
-        
-        $firstNumber = str_split(strrev($matches[1]));
-        $secondNumber = str_split(strrev($matches[3]));
-        $resultNumber = str_split(strrev($matches[4]));
-        $operation = $matches[2];
+        preg_match_all(self::$regex, str_replace(' ', '', trim($rawRule)), $matches, PREG_SET_ORDER, 0);
+
+        $firstNumber = str_split(strrev($matches[0][1]));
+        $secondNumber = str_split(strrev($matches[0][3]));
+        $resultNumber = str_split(strrev($matches[0][4]));
+        $operation = $matches[0][2];
         
         return new self($firstNumber, $secondNumber, $resultNumber, $operation);
     }

@@ -15,25 +15,28 @@ class Brutforcer
 
     private array $result = [];
 
-    public function __construct()
+    public function __construct(
+        private RuleParser $ruleParser,
+    )
     {
         /** @todo load list */
         //$this->fillList(10);
     }
 
-    public static function quickStart(array $rulesConfigs, string $filePath): void
+    public static function quickStart(array $rulesConfigs, string $filePath): array
     {
-        $crypto = new self();
+        $crypto = new self(new RuleParser());
         $crypto->loadRules($rulesConfigs);
         $crypto->calculate($filePath);
-        /** @todo return result */
+        
+        return $crypto->result;
     }
 
     public function loadRules(array $rulesConfigs): void
     {
         /** @todo check for uniq rules */
         foreach ($rulesConfigs as $rawRule) {
-            $this->rules[] = Cryptorule::parseRule($rawRule);
+            $this->rules[] = $this->ruleParser->parse($rawRule);
         }
     }
 

@@ -1,111 +1,84 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sergosv\CryptogrammBrutforce;
 
-/**
- * Class Cryptorule
- * @package sergo_sv\cryptogramm
- */
+use JetBrains\PhpStorm\Pure;
+
 class Cryptorule
 {
-    /**
-     * @var array
-     */
-    public static $symbolsMap = ['a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5, 'g' => 6, 'h' => 7, 'i' => 8, 'j' => 9];
-    private $firstNumber = [];
-    private $secondNumber = [];
-    private $resultNumber = [];
-    /**
-     * @var array
-     */
-    private $matches = [];
+    public static array $symbolsMap = [
+        'a' => 0,
+        'b' => 1,
+        'c' => 2,
+        'd' => 3,
+        'e' => 4,
+        'f' => 5,
+        'g' => 6,
+        'h' => 7,
+        'i' => 8,
+        'j' => 9,
+    ];
 
-    /**
-     * @var string
-     */
-    private static $regex = '/([abcdefghij]+)([+\-*\/])([abcdefghij]+)=([abcdefghij]+)/i';
+    private static string $regex = '/([abcdefghij]+)([+\-*\/])([abcdefghij]+)=([abcdefghij]+)/i';
 
-    /**
-     * Cryptorule constructor.
-     * @param array $matches
-     */
-    public function __construct($matches)
-    {
-        $this->init($matches);
-
+    public function __construct(
+        private array $firstNumber,
+        private array $secondNumber,
+        private array $resultNumber,
+        private string $operation
+    ) {
     }
 
-    /**
-     * Cryptorule constructor.
-     * @param array $matches
-     */
-    public function init($matches)
+    public static function parseRule(string $rawRule): self
     {
-        $this->matches = $matches;
-        $this->firstNumber = str_split(strrev($matches[1]));
-        $this->secondNumber = str_split(strrev($matches[3]));
-        $this->resultNumber = str_split(strrev($matches[4]));
+        preg_match_all(self::$regex, str_replace(' ', '', trim($rawRule)), $matches, PREG_SET_ORDER);
+        
+        $firstNumber = str_split(strrev($matches[1]));
+        $secondNumber = str_split(strrev($matches[3]));
+        $resultNumber = str_split(strrev($matches[4]));
+        $operation = $matches[2];
+        
+        return new self($firstNumber, $secondNumber, $resultNumber, $operation);
     }
 
-    /**
-     * @param string $rawRule
-     * @return Cryptorule
-     */
-    public static function parseRule($rawRule)
-    {
-        preg_match_all(self::$regex, str_replace(' ', '', trim($rawRule)), $matches, PREG_SET_ORDER, 0);
-        return new self($matches[0]);
-    }
-
-    /**
-     * @param array $numbers
-     * @return bool
-     */
-    public function checkRule($numbers)
+    #[Pure]
+    public function checkRule(array $numbers): bool
     {
         $firstNumber = $this->buildNumber($this->firstNumber, $numbers);
         $secondNumber = $this->buildNumber($this->secondNumber, $numbers);
         $resultNumber = $this->buildNumber($this->resultNumber, $numbers);
-        if ($firstNumber === false || $secondNumber === false || $resultNumber === false) {
+
+        if (is_null($firstNumber) || is_null($secondNumber) || is_null($resultNumber)) {
             return false;
-        }
-        $calculatedResult = $this->calcOperation($firstNumber, $secondNumber);
-        if ($calculatedResult === false || $calculatedResult !== $resultNumber) {
-            return false;
-        } else {
-            return true;
         }
 
+        return $resultNumber === $this->calcOperation($firstNumber, $secondNumber, $this->operation);
     }
 
-    /**
-     * @param array $numberMap
-     * @param array $numbers
-     * @return int|bool
-     */
-    private function buildNumber($numberMap, $numbers)
+    #[Pure] 
+    private function buildNumber(array $numberMap, array $numbers): ?int
     {
         $number = 0;
         $numberSize = count($numberMap);
         foreach ($numberMap as $index => $symbol) {
             $digit = $numbers[self::$symbolsMap[$symbol]];
-            if (($digit == 0) && ($index === $numberSize - 1)) {
-                return false;
+            if (($digit === 0) && ($index === $numberSize - 1)) {
+                return null;
             }
-            $number += $digit * pow(10, $index);
-        };
+            $number += $digit * (10 ** $index);
+        }
+
         return $number;
     }
 
-    /**
-     * @param int $firstNumber
-     * @param int $secondNumber
-     * @return bool|float|int
-     */
-    private function calcOperation($firstNumber, $secondNumber)
+    #[Pure]
+    private function calcOperation(int $firstNumber, int $secondNumber, string $operation): ?int
     {
         $result = -1;
-        switch ($this->matches[2]) {
+
+        switch ($operation) {
             case '+':
                 $result = $firstNumber + $secondNumber;
                 break;
@@ -116,15 +89,17 @@ class Cryptorule
                 $result = $firstNumber * $secondNumber;
                 break;
             case '/':
-                if ($secondNumber == 0) {
-                    return false;
+                if ($secondNumber === 0) {
+                    return null;
                 }
                 $result = $firstNumber / $secondNumber;
                 break;
         }
-        if ($result < 0) {
-            return false;
+
+        if ($result < 0 || !is_int($result)) {
+            return null;
         }
+
         return $result;
     }
 }

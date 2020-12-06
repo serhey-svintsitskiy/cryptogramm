@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sergosv\CryptogrammBrutforce;
 
+use JetBrains\PhpStorm\Pure;
 use RuntimeException;
 
 class Brutforcer
@@ -55,11 +56,10 @@ class Brutforcer
         return $this->result;
     }
 
-    /**
-     * @return bool
-     */
+    #[Pure]
     private function checkRules(): bool
     {
+        /** @var Cryptorule $cryptorule */
         foreach ($this->rules as $cryptorule) {
             if (!$cryptorule->checkRule($this->numbers)) {
                 return false;

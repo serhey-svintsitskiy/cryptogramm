@@ -1,6 +1,6 @@
 <?php
 
-namespace Sergosv\cryptogramm;
+namespace Sergosv\CryptogrammBrutforce;
 
 /**
  * Class Cryptogramm

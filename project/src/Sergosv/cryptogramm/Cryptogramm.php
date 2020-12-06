@@ -1,6 +1,6 @@
 <?php
 
-namespace sergo_sv\cryptogramm;
+namespace Sergosv\cryptogramm;
 
 /**
  * Class Cryptogramm

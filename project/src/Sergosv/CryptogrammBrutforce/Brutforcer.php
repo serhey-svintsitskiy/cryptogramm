@@ -1,143 +1,104 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sergosv\CryptogrammBrutforce;
 
-/**
- * Class Brutforcer
- * @package sergo_sv\cryptogramm
- */
+use RuntimeException;
+
 class Brutforcer
 {
+    private array $rules = [];
 
-    /**
-     * @var array
-     */
-    private $rules = [];
+    private array $numbers = [];
 
-    /**
-     * Brutforcer constructor.
-     */
+    private array $result = [];
+
     public function __construct()
     {
-        $this->init();
+        /** @todo load list */
+        //$this->fillList(10);
     }
 
-    /**
-     *
-     */
-    private function init()
-    {
-        //$this->get_perestanovka(10);
-    }
-
-    /**
-     * @param array $rulesConfigs
-     * @param string $filePath
-     */
-    public static function quickStart($rulesConfigs, $filePath)
+    public static function quickStart(array $rulesConfigs, string $filePath): void
     {
         $crypto = new self();
         $crypto->loadRules($rulesConfigs);
         $crypto->calculate($filePath);
-        die;
+        /** @todo return result */
     }
 
-    /**
-     * @param array $rulesConfigs
-     */
-    public function loadRules($rulesConfigs)
+    public function loadRules(array $rulesConfigs): void
     {
-        foreach ($rulesConfigs as $rawRule){
+        /** @todo check for uniq rules */
+        foreach ($rulesConfigs as $rawRule) {
             $this->rules[] = Cryptorule::parseRule($rawRule);
         }
     }
 
-    /**
-     * @var array
-     */
-    private $numbers = [];
-
-    /**
-     * @var array
-     */
-    private $result = [];
-
-    /**
-     * @param string $filePath
-     * @throws \Exception
-     */
-    public function calculate($filePath)
+    public function calculate(string $filePath): array
     {
         if (!file_exists($filePath)) {
-            throw new \Exception('Could not find file "' . $filePath . '".');
+            throw new RuntimeException('Could not find file "' . $filePath . '".');
         }
-        $fp = fopen($filePath, 'r');
+        $fp = fopen($filePath, 'rb');
         if (!$fp) {
-            throw new \Exception('Could not open file "perm.txt" for reading.');
+            throw new RuntimeException('Could not open file "perm.txt" for reading.');
         }
-        $test = 0;
         while (($line = fgets($fp)) !== false) {
-            $test++;
             $this->numbers = str_split(trim($line));
-            if($this->checkRules()){
+            if ($this->checkRules()) {
                 $this->result[] = $this->numbers;
             }
         }
-        print_r($this->result);
-        die;
+
+        return $this->result;
     }
 
     /**
      * @return bool
      */
-    private function checkRules()
+    private function checkRules(): bool
     {
-        /**
-         * @var Cryptorule $cryptorule
-         */
-        foreach ($this->rules as $cryptorule){
-            if(!$cryptorule->checkRule($this->numbers)){
+        foreach ($this->rules as $cryptorule) {
+            if (!$cryptorule->checkRule($this->numbers)) {
                 return false;
             }
         }
+
         return true;
     }
 
-    /**
-     * @param int $n
-     * @return bool
-     * @throws \Exception
-     */
-    public static function get_perestanovka($n)
+    public static function generateList(int $n): void
     {
         $filePath = __DIR__ . '/../../public_html/perm.txt';
         if (!file_exists($filePath)) {
-            throw new \Exception('Could not find file "' . $filePath . '".');
+            throw new RuntimeException('Could not find file "' . $filePath . '".');
         }
-        $fp = fopen($filePath, 'w');
+        $fp = fopen($filePath, 'wb');
         if (!$fp) {
-            throw new \Exception('Could not open file "perm.txt" for writing.');
+            throw new RuntimeException('Could not open file "perm.txt" for writing.');
         }
         $a = array_fill(0, $n, -1);
         $i = 0;
         while ($i >= 0) {
             while ($i < $n) {
                 $j = $a[$i];
-                while (in_array(++$j, $a) && $j < $n) ;
-                if ($j == $n) break;
+                while (in_array(++$j, $a, true) && $j < $n) {
+                }
+                if ($j === $n) {
+                    break;
+                }
                 $a[$i++] = $j;
             }
-            if ($i == $n) {
-                //array_push($result, implode('',$a));
+            if ($i === $n) {
                 if (!fwrite($fp, implode('', $a) . "\n")) {
-                    print_r($fp);
-                    throw new \Exception('Could not write text "' . implode('', $a) . '" to file "perm.txt".');
+                    throw new RuntimeException('Could not write text "' . implode('', $a) . '" to file "perm.txt".');
                 }
                 $i--;
             }
             $a[$i--] = -1;
         }
         fclose($fp);
-        return true;
     }
 }

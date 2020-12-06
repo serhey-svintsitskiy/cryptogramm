@@ -10,13 +10,9 @@ class RuleParser
 
     public function parse(string $rawRule): Cryptorule
     {
-        preg_match($this->regex, str_replace(' ', '', trim($rawRule)), $matches, PREG_UNMATCHED_AS_NULL);
+        $preparedRawRule = str_replace(' ', '', trim($rawRule));
+        preg_match($this->regex, $preparedRawRule, $matches, PREG_UNMATCHED_AS_NULL);
 
-        $firstNumber = str_split(strrev($matches[1]));
-        $secondNumber = str_split(strrev($matches[3]));
-        $resultNumber = str_split(strrev($matches[4]));
-        $operation = $matches[2];
-
-        return new Cryptorule($firstNumber, $secondNumber, $resultNumber, $operation);
+        return new Cryptorule($preparedRawRule, $matches[2], $matches[1], $matches[3], $matches[4]);
     }
 }

@@ -21,26 +21,38 @@ class Cryptorule
         'j' => 9,
     ];
 
+    private array $operand1;
+
+    private array $operand2;
+
+    private array $result;
+
+    #[Pure]
     public function __construct(
-        private array $firstNumber,
-        private array $secondNumber,
-        private array $resultNumber,
-        private string $operation
+        private string $ident,
+        private string $operator,
+        string $operand1,
+        string $operand2,
+        string $result
     ) {
+        
+        $this->operand1 = str_split(strrev($operand1));
+        $this->operand2 = str_split(strrev($operand2));
+        $this->result = str_split(strrev($result));
     }
 
     #[Pure]
     public function checkRule(array $numbers): bool
     {
-        $firstNumber = $this->buildNumber($this->firstNumber, $numbers);
-        $secondNumber = $this->buildNumber($this->secondNumber, $numbers);
-        $resultNumber = $this->buildNumber($this->resultNumber, $numbers);
+        $firstNumber = $this->buildNumber($this->operand1, $numbers);
+        $secondNumber = $this->buildNumber($this->operand2, $numbers);
+        $resultNumber = $this->buildNumber($this->result, $numbers);
 
         if (is_null($firstNumber) || is_null($secondNumber) || is_null($resultNumber)) {
             return false;
         }
 
-        return $resultNumber === $this->calcOperation($firstNumber, $secondNumber, $this->operation);
+        return $resultNumber === $this->calcOperation($firstNumber, $secondNumber, $this->operator);
     }
 
     #[Pure] 
@@ -92,12 +104,6 @@ class Cryptorule
     #[Pure]
     public function getIdent(): string
     {
-        return sprintf(
-            "%s%s%s=%s",
-            implode('', $this->firstNumber),
-            $this->operation,
-            implode('', $this->secondNumber),
-            implode('', $this->resultNumber)
-        );
+        return $this->ident;
     }
 }

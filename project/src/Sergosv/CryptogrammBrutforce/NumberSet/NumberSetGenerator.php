@@ -10,7 +10,7 @@ use JetBrains\PhpStorm\Pure;
 class NumberSetGenerator implements NumberSetInterface
 {
     #[Pure]
-    public function getIterator(): Iterator
+    public function getIterator(): iterable
     {
         $n = 10;
         $a = array_fill(0, $n, -1);

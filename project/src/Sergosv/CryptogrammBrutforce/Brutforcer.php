@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Sergosv\CryptogrammBrutforce;
 
 use JetBrains\PhpStorm\Pure;
-use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetGenerator;
 use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetInterface;
 use Sergosv\CryptogrammBrutforce\Rule\Cryptorule;
-use Sergosv\CryptogrammBrutforce\Rule\RuleParser;
 use Sergosv\CryptogrammBrutforce\Rule\RuleSet;
 
 class Brutforcer
@@ -17,17 +15,6 @@ class Brutforcer
         private NumberSetInterface $numberSetIterator,
         private RuleSet $ruleSet,
     ) {
-    }
-
-    public static function quickStart(array $rulesConfigs): array
-    {
-        $ruleParser = new RuleParser();
-        $ruleSet = new RuleSet();
-        foreach ($rulesConfigs as $rawRule) {
-            $ruleSet->add($ruleParser->parse($rawRule));
-        }
-        $crypto = new self(new NumberSetGenerator(), $ruleSet);
-        return $crypto->calculate();
     }
 
     public function calculate(): array

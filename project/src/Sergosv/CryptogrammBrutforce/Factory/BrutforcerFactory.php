@@ -6,6 +6,7 @@ namespace Sergosv\CryptogrammBrutforce\Factory;
 
 use Sergosv\CryptogrammBrutforce\Brutforcer;
 use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetGenerator;
+use Sergosv\CryptogrammBrutforce\ResultValidator\FirstResult;
 use Sergosv\CryptogrammBrutforce\Rule\RuleParser;
 use Sergosv\CryptogrammBrutforce\Rule\RuleSet;
 
@@ -23,6 +24,6 @@ class BrutforcerFactory
             $this->ruleSet->add($this->ruleParser->parse($rawRule));
         }
 
-        return new Brutforcer(new NumberSetGenerator(), $this->ruleSet);
+        return new Brutforcer(new NumberSetGenerator(), $this->ruleSet, new FirstResult());
     }
 }

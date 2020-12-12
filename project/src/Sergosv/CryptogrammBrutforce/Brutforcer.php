@@ -6,6 +6,7 @@ namespace Sergosv\CryptogrammBrutforce;
 
 use JetBrains\PhpStorm\Pure;
 use Sergosv\CryptogrammBrutforce\NumberSet\NumberSetInterface;
+use Sergosv\CryptogrammBrutforce\ResultValidator\ResultValidatorInterface;
 use Sergosv\CryptogrammBrutforce\Rule\Cryptorule;
 use Sergosv\CryptogrammBrutforce\Rule\RuleSet;
 
@@ -14,6 +15,7 @@ class Brutforcer
     public function __construct(
         private NumberSetInterface $numberSetIterator,
         private RuleSet $ruleSet,
+        private ResultValidatorInterface $resultValidator,
     ) {
     }
 
@@ -22,8 +24,13 @@ class Brutforcer
         $result = [];
         
         foreach ($this->numberSetIterator->getIterator() as $numbers) {
-            if ($this->checkRules($numbers)) {
-                $result[] = $numbers;
+            if (!$this->checkRules($numbers)) {
+                continue;
+            }
+            
+            $result[] = $numbers;
+            if ($this->resultValidator->isValid($result)) {
+                return $result;
             }
         }
 
